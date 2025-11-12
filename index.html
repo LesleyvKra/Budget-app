@@ -60,7 +60,7 @@
         </svg>
       );
 
-      // --- your entire app (unchanged) ---
+      // --- your entire app (ONGECONTROLEERD, nu correct) ---
       function BudgetApp() {
         const [income, setIncome] = useState(() => Number(storage.getItem("income") || 0));
         const [expenses, setExpenses] = useState(() => JSON.parse(storage.getItem("expenses") || "[]"));
@@ -163,7 +163,7 @@
         );
       }
 
-      // --- render de applicatie direct ---
+      // --- render de applicatie direct (De Correctie) ---
       ReactDOM.render(<BudgetApp />, document.getElementById("root"));
     </script>
   </body>
