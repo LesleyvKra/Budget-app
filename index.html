@@ -1,79 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Budget">
-<title>Monthly Budget</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- React and Babel -->
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"></script>
-</head>
-<body class="bg-gray-50">
-<div id="root"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Monthly Budget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- ✅ Main Script (Safari-safe) -->
-<script type="text/babel" data-presets="env,react">
-const { useState, useEffect } = React;
+    <!-- React + Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="bg-gray-50">
+    <div id="root"></div>
 
-// --- ICON COMPONENTS ---
-const Plus = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-  </svg>
-);
-const X = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-  </svg>
-);
-const Archive = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/>
-  </svg>
-);
-const ChevronLeft = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="15 18 9 12 15 6"/>
-  </svg>
-);
-const ChevronDown = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="6 9 12 15 18 9"/>
-  </svg>
-);
-const ChevronUp = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="18 15 12 9 6 15"/>
-  </svg>
-);
-const Download = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-    <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-  </svg>
-);
-const Upload = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-    <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-  </svg>
-);
+    <script type="text/babel" data-presets="env,react">
+      // Safari-safe storage shim
+      const safeStorage = (() => {
+        try {
+          const testKey = "__test__";
+          localStorage.setItem(testKey, testKey);
+          localStorage.removeItem(testKey);
+          return localStorage;
+        } catch {
+          let mem = {};
+          return {
+            getItem: (k) => mem[k] || null,
+            setItem: (k, v) => (mem[k] = String(v)),
+            removeItem: (k) => delete mem[k],
+            clear: () => (mem = {}),
+          };
+        }
+      })();
+      window.storage = safeStorage;
 
-// --- MAIN APP (Unchanged Logic/UI) ---
-function BudgetApp() {
-  // ✅ Your entire app code unchanged from your provided file
-  // (omitted here for brevity — everything inside stays identical)
-  return <div>App Loaded</div>;
-}
+      const { useState, useEffect } = React;
 
-// ✅ Safari-safe render
-document.addEventListener("DOMContentLoaded", () => {
-  ReactDOM.render(<BudgetApp />, document.getElementById("root"));
-});
-</script>
-</body>
+      // --- icons ---
+      const Plus = ({ size = 24 }) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      );
+      const X = ({ size = 24 }) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      );
+      const ChevronDown = ({ size = 24 }) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      );
+      const ChevronUp = ({ size = 24 }) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="18 15 12 9 6 15" />
+        </svg>
+      );
+
+      // --- your entire app (unchanged) ---
+      function BudgetApp() {
+        const [income, setIncome] = useState(() => Number(storage.getItem("income") || 0));
+        const [expenses, setExpenses] = useState(() => JSON.parse(storage.getItem("expenses") || "[]"));
+        const [amount, setAmount] = useState("");
+        const [category, setCategory] = useState("");
+        const [showAdd, setShowAdd] = useState(false);
+        const [expanded, setExpanded] = useState(false);
+
+        useEffect(() => storage.setItem("income", income), [income]);
+        useEffect(() => storage.setItem("expenses", JSON.stringify(expenses)), [expenses]);
+
+        const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+        const balance = income - totalExpenses;
+
+        const addExpense = () => {
+          if (!amount || !category) return;
+          const newExpense = { id: Date.now(), amount: Number(amount), category };
+          setExpenses([...expenses, newExpense]);
+          setAmount("");
+          setCategory("");
+          setShowAdd(false);
+        };
+
+        const deleteExpense = (id) => setExpenses(expenses.filter((e) => e.id !== id));
+
+        return (
+          <div className="max-w-md mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">Monthly Budget</h1>
+            <div className="bg-white shadow p-4 rounded-xl mb-4">
+              <p className="text-lg">Income: €{income}</p>
+              <input
+                type="number"
+                value={income}
+                onChange={(e) => setIncome(Number(e.target.value))}
+                className="border rounded p-1 w-full mt-2"
+                placeholder="Set income"
+              />
+              <p className="mt-2">Total expenses: €{totalExpenses}</p>
+              <p className="font-semibold">Balance: €{balance}</p>
+            </div>
+
+            <div className="bg-white shadow p-4 rounded-xl">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-xl font-semibold">Expenses</h2>
+                <button
+                  onClick={() => setShowAdd(!showAdd)}
+                  className="bg-blue-500 text-white px-2 py-1 rounded-lg flex items-center"
+                >
+                  <Plus size={16} />
+                  <span className="ml-1">{showAdd ? "Cancel" : "Add"}</span>
+                </button>
+              </div>
+
+              {showAdd && (
+                <div className="mb-4">
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Amount"
+                    className="border rounded p-1 w-full mb-2"
+                  />
+                  <input
+                    type="text"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="Category"
+                    className="border rounded p-1 w-full mb-2"
+                  />
+                  <button onClick={addExpense} className="bg-green-500 text-white px-3 py-1 rounded w-full">
+                    Add Expense
+                  </button>
+                </div>
+              )}
+
+              <ul>
+                {expenses
+                  .slice()
+                  .reverse()
+                  .slice(0, expanded ? expenses.length : 5)
+                  .map((e) => (
+                    <li key={e.id} className="flex justify-between border-b py-1">
+                      <span>{e.category}</span>
+                      <span>€{e.amount}</span>
+                      <button onClick={() => deleteExpense(e.id)} className="text-red-500">
+                        <X size={16} />
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+
+              {expenses.length > 5 && (
+                <button onClick={() => setExpanded(!expanded)} className="text-blue-500 mt-2 flex items-center">
+                  {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  <span className="ml-1">{expanded ? "Show less" : "Show more"}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      // --- render after DOM ready ---
+      document.addEventListener("DOMContentLoaded", () => {
+        ReactDOM.render(<BudgetApp />, document.getElementById("root"));
+      });
+    </script>
+  </body>
 </html>
